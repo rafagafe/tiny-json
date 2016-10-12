@@ -9,26 +9,26 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 #ifndef _TINY_JSON_H_
 #define	_TINY_JSON_H_
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-/** @defgroup tinyJson Tiny JSON parser. 
+/** @defgroup tinyJson Tiny JSON parser.
   * @{ */
-    
+
 /** Enumeration of codes of suported JSON properties types. */
 typedef enum {
     JSON_OBJ, JSON_ARRAY, JSON_TEXT, JSON_BOOLEAN, JSON_INTEGER, JSON_NULL
@@ -47,8 +47,8 @@ typedef struct json_s {
 
 /** Parse a string to get a json.
   * @param str String pointer with a JSON object. It will be modified.
-  * @param mem
-  * @param qty 
+  * @param mem Array of json properties to allocate.
+  * @param qty Number of elementes of mem.
   * @retval Null pointer if any was wrong in the parse process.
   * @retval If the parser process was successfully a valid handler of a json.
   *         This property is always unnamed and its type is JSON_OBJ. */
@@ -87,7 +87,7 @@ static inline json_t const* json_getSibling( json_t const* json ) {
 
 /** Search a property by its name in a JSON object.
   * @param obj A valid handler of a json object. Its type must be JSON_OBJ.
-  * @param property The name of property to get. 
+  * @param property The name of property to get.
   * @retval The handler of the json property if found.
   * @retval Null pointer if not found. */
 json_t const* json_getProperty( json_t const* obj, char const* property );
@@ -117,9 +117,8 @@ static inline int64_t json_getInteger( json_t const* property ) {
 
 /** @ } */
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 
 #endif	/* _TINY_JSON_H_ */
-

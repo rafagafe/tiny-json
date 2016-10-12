@@ -9,10 +9,10 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 #include <string.h>
@@ -46,17 +46,17 @@ static char* _setToNull( char* ch );
 json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
     char* ptr = _goWhiteSpace( str );
     if ( *ptr != '{') return 0;
-    jsonPool_t pool = { .mem = mem, .qty = qty };    
-    json_t* obj = _poolInit( &pool );    
-    obj->name    = 0;     
-    obj->sibling = 0;     
+    jsonPool_t pool = { .mem = mem, .qty = qty };
+    json_t* obj = _poolInit( &pool );
+    obj->name    = 0;
+    obj->sibling = 0;
     obj->u.child = 0;
     ptr = _objValue( ptr, obj, &pool );
     if ( !ptr ) return 0;
     return obj;
 }
 
-/** Get a special character with its escape character. Examples: 
+/** Get a special character with its escape character. Examples:
   * 'b' -> '\b', 'n' -> '\n', 't' -> '\t'
   * @param ch The escape character.
   * @return  The character code. */
@@ -92,7 +92,7 @@ static bool _isHexaDigit( unsigned char nibble ) {
 /** Parse 4 charcters.
   * @Param str Pointer to  first digit.
   * @retval '?' If the four characters are hexadecimal digits.
-  * @retcal '\0' In other cases. */ 
+  * @retcal '\0' In other cases. */
 static char _getCharFromUnicode( char const* str ) {
     unsigned int i;
     for( i = 0; i < 4; ++i )
@@ -103,7 +103,7 @@ static char _getCharFromUnicode( char const* str ) {
 
 /** Parse a string and replace the scape characters by their meaning characters.
   * This parser stops when finds the character '\"'. Then replaces '\"' by '\0'.
-  * @param str Pointer to first character. 
+  * @param str Pointer to first character.
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
 static char* _parseString( char* str ) {
@@ -132,8 +132,8 @@ static char* _parseString( char* str ) {
     return 0;
 }
 
-/** Parse a string to get the name of a property. 
-  * @param str Pointer to first character. 
+/** Parse a string to get the name of a property.
+  * @param str Pointer to first character.
   * @param property The property to assign the name.
   * @retval Pointer to first of property value. If success.
   * @retval Null pointer if any error occur. */
@@ -147,23 +147,23 @@ static char* _propertyName( char* ptr, json_t* property ) {
     return _goWhiteSpace( ptr );
 }
 
-/** Parse a string to get the value of a property when its type is JSON_TEXT. 
-  * @param str Pointer to first character ('\"'). 
+/** Parse a string to get the value of a property when its type is JSON_TEXT.
+  * @param str Pointer to first character ('\"').
   * @param property The property to assign the name.
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
-static char* _textValue( char* ptr, json_t* property ) {    
+static char* _textValue( char* ptr, json_t* property ) {
     ++property->u.value;
     ptr = _parseString( ++ptr );
     if ( !ptr ) return 0;
-    property->type = JSON_TEXT;    
+    property->type = JSON_TEXT;
     return ptr;
 }
 
 /** Compare two strings until get the null character in the second one.
-  * @param ptr
-  * @param str
-  * @retval
+  * @param ptr sub string
+  * @param str main string
+  * @retval Pointer to next chraracter.
   * @retval Null pointer if any error occur. */
 static char* _checkStr( char* ptr, char const* str ) {
     while( *str )
@@ -172,69 +172,69 @@ static char* _checkStr( char* ptr, char const* str ) {
     return ptr;
 }
 
-/** Parser a string to get a primitive value. 
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'. 
-  * @param str Pointer to first character. 
+/** Parser a string to get a primitive value.
+  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @param value String with the primitive literal.
   * @param type The code of the type. ( JSON_BOOLEAN or JSON_NULL )
   * @retval Pointer to first non white space after the string. If success.
-  * @retval Null pointer if any error occur. */ 
+  * @retval Null pointer if any error occur. */
 static char* _primitiveValue( char* ptr, json_t* property, char const* value, jsonType_t type ) {
     ptr = _checkStr( ptr, value );
     if ( !ptr ) return 0;
-    ptr = _setToNull( ptr );  
-    property->type = type;    
+    ptr = _setToNull( ptr );
+    property->type = type;
     return ptr;
 }
 
-/** Parser a string to get a true value. 
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'. 
-  * @param str Pointer to first character. 
+/** Parser a string to get a true value.
+  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
-  * @retval Null pointer if any error occur. */ 
+  * @retval Null pointer if any error occur. */
 static char* _trueValue( char* ptr, json_t* property ) {
     return _primitiveValue( ptr, property, "true", JSON_BOOLEAN );
 }
 
-/** Parser a string to get a false value. 
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'. 
-  * @param str Pointer to first character. 
+/** Parser a string to get a false value.
+  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
-  * @retval Null pointer if any error occur. */ 
+  * @retval Null pointer if any error occur. */
 static char* _falseValue( char* ptr, json_t* property ) {
     return _primitiveValue( ptr, property, "false", JSON_BOOLEAN );
 }
 
-/** Parser a string to get a null value. 
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'. 
-  * @param str Pointer to first character. 
+/** Parser a string to get a null value.
+  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
-  * @retval Null pointer if any error occur. */ 
+  * @retval Null pointer if any error occur. */
 static char* _nullValue( char* ptr, json_t* property ) {
     return _primitiveValue( ptr, property, "null", JSON_NULL );
 }
 
-/** Parser a string to get a integer value. 
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'. 
-  * @param str Pointer to first character. 
+/** Parser a string to get a integer value.
+  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
-  * @retval Null pointer if any error occur. */ 
+  * @retval Null pointer if any error occur. */
 static char* _integerValue( char* ptr, json_t* property ) {
     if ( *ptr == '-' ) ++ptr;
     ptr = _goNum( ptr );
     if ( !ptr ) return 0;
     ptr = _setToNull( ptr );
-    property->type = JSON_INTEGER;   
-    return ptr;    
+    property->type = JSON_INTEGER;
+    return ptr;
 }
 
-/** Add a property to a JSON object or array.  
-  * @param obj The handler of the JSON object or array.  
+/** Add a property to a JSON object or array.
+  * @param obj The handler of the JSON object or array.
   * @param property The handler of the property to be added. */
 static void _add( json_t* obj, json_t* property ) {
     property->sibling = 0;
@@ -242,19 +242,19 @@ static void _add( json_t* obj, json_t* property ) {
     else {
         json_t* iter;
         for( iter = obj->u.child; iter->sibling; iter = iter->sibling );
-        iter->sibling = property;        
-    }    
+        iter->sibling = property;
+    }
 }
 
-/** Parser a string to get a json object value. 
-  * @param str Pointer to first character. 
+/** Parser a string to get a json object value.
+  * @param str Pointer to first character.
   * @param pool The handler of a json pool for creating json instances.
   * @retval Pointer to first character after the value. If success.
-  * @retval Null pointer if any error occur. */ 
+  * @retval Null pointer if any error occur. */
 static char* _objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
-    obj->type    = JSON_OBJ; 
+    obj->type    = JSON_OBJ;
     obj->u.child = 0;
-    obj->sibling = 0;   
+    obj->sibling = 0;
     ptr++;
     for(;;) {
         ptr = _goWhiteSpace( ptr );
@@ -265,7 +265,7 @@ static char* _objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
             json_t* parentObj = obj->sibling;
             if ( !parentObj ) return ++ptr;
             obj->sibling = 0;
-            obj = parentObj;  
+            obj = parentObj;
             ++ptr;
             continue;
         }
@@ -276,36 +276,36 @@ static char* _objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
         json_t* property = _poolNew( pool );
         if ( !property ) return 0;
         if( obj->type != JSON_ARRAY ) {
-            if ( *ptr != '\"' ) return 0;                        
-            ptr = _propertyName( ptr, property );        
+            if ( *ptr != '\"' ) return 0;
+            ptr = _propertyName( ptr, property );
             if ( !ptr ) return 0;
-        } 
+        }
         else property->name = 0;
         _add( obj, property );
         property->u.value = ptr;
         switch( *ptr ) {
             case '{':
-                property->type    = JSON_OBJ; 
-                property->u.child = 0;                
+                property->type    = JSON_OBJ;
+                property->u.child = 0;
                 property->sibling = obj;
                 obj = property;
                 ++ptr;
                 break;
             case '[':
-                property->type    = JSON_ARRAY; 
-                property->u.child = 0;                
+                property->type    = JSON_ARRAY;
+                property->u.child = 0;
                 property->sibling = obj;
                 obj = property;
                 ++ptr;
-                break;                 
-            case '\"': ptr = _textValue( ptr, property );    break;      
-            case 't':  ptr = _trueValue( ptr, property );    break;      
-            case 'f':  ptr = _falseValue( ptr, property );   break;      
-            case 'n':  ptr = _nullValue( ptr, property );    break;      
+                break;
+            case '\"': ptr = _textValue( ptr, property );    break;
+            case 't':  ptr = _trueValue( ptr, property );    break;
+            case 'f':  ptr = _falseValue( ptr, property );   break;
+            case 'n':  ptr = _nullValue( ptr, property );    break;
             default:   ptr = _integerValue( ptr, property ); break;
         }
         if ( !ptr ) return 0;
-    }    
+    }
 }
 
 /** Initialize a json pool.
@@ -336,7 +336,7 @@ static bool _isOneOfThem( char ch, char const* set ) {
     return false;
 }
 
-/** Increases a pointer while it points to a character that belongs to a set.   
+/** Increases a pointer while it points to a character that belongs to a set.
   * @param str The initial pointer value.
   * @param set Set of characters. It is just a null-terminated string.
   * @return The final pointer value or null pointer if the null character was found. */
@@ -351,7 +351,7 @@ static char* _goWhile( char* str, char const* set ) {
 /** Increases a pointer while it points to a white space character.
   * @param str The initial pointer value.
   * @return The final pointer value or null pointer if the null character was found. */
-static char* _goWhiteSpace( char* str ) {   
+static char* _goWhiteSpace( char* str ) {
     return _goWhile( str, " \n\r\t\f" );
 }
 
@@ -368,13 +368,13 @@ static char* _goNum( char* str ) {
         if ( !_isNum( *str ) )
             return str;
     }
-    return 0;    
+    return 0;
 }
 
-/** Set a char to '\0' and increase its pointer if the char is diferent to '}' or ']'.  
+/** Set a char to '\0' and increase its pointer if the char is diferent to '}' or ']'.
   * @param ch Pointer to character.
   * @return  Final value pointer. */
 static char* _setToNull( char* ch ) {
-    if ( !_isOneOfThem( *ch, "}]" ) ) *ch++ = '\0';       
+    if ( !_isOneOfThem( *ch, "}]" ) ) *ch++ = '\0';
     return ch;
 }
