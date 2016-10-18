@@ -1,5 +1,7 @@
 
 /*
+ * Developed by Rafa Garcia <rafagarcia77@gmail.com>
+ *
  * tiny-json.h is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,7 +33,8 @@ extern "C" {
 
 /** Enumeration of codes of suported JSON properties types. */
 typedef enum {
-    JSON_OBJ, JSON_ARRAY, JSON_TEXT, JSON_BOOLEAN, JSON_INTEGER, JSON_NULL
+    JSON_OBJ, JSON_ARRAY, JSON_TEXT, JSON_BOOLEAN,
+    JSON_INTEGER, JSON_REAL, JSON_SCIENTIFIC, JSON_NULL
 } jsonType_t;
 
 /** Structure to handle JSON properties. */
@@ -113,6 +116,13 @@ static inline bool json_getBoolean( json_t const* property ) {
   * @return The value stdint. */
 static inline int64_t json_getInteger( json_t const* property ) {
     return (int64_t)atoll( property->u.value );
+}
+
+/** Get the value of a json real property.
+  * @param property A valid handler of a json object. Its type must be JSON_REAL.
+  * @return The value stdint. */
+static inline double json_getReal( json_t const* property ) {
+    return atof( property->u.value );
 }
 
 /** @ } */

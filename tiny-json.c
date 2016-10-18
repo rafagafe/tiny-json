@@ -218,18 +218,49 @@ static char* _nullValue( char* ptr, json_t* property ) {
     return _primitiveValue( ptr, property, "null", JSON_NULL );
 }
 
-/** Parser a string to get a integer value.
+static bool _isNum( unsigned char ch );
+
+static char* _expValue( char* ptr, json_t* property ) {
+    if ( *ptr == '-' || *ptr == '+' ) ++ptr;
+    if ( !_isNum( *ptr ) ) return 0;
+    ptr = _goNum( ++ptr );
+    property->type = JSON_SCIENTIFIC;
+    return ptr;
+}
+
+static char* _fraqValue( char* ptr, json_t* property ) {
+    if ( !_isNum( *ptr ) ) return 0;
+    ptr = _goNum( ++ptr );
+    if ( !ptr ) return 0;
+    if ( *ptr == 'e' || *ptr == 'E' ) return _expValue( ++ptr, property );
+    property->type = JSON_REAL;
+    return ptr;
+}
+
+/** Parser a string to get a numerial value.
   * If the first character after the value is diferent of '}' or ']' is set to '\0'.
   * @param str Pointer to first character.
-  * @param property Property handler to set the value and the type, (true, false or null).
+  * @param property Property handler to set the value and the type:
+  *         JSON_REAL, JSON_SCIENTIFIC or JSON_INTEGER.
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
-static char* _integerValue( char* ptr, json_t* property ) {
+static char* _numValue( char* ptr, json_t* property ) {
     if ( *ptr == '-' ) ++ptr;
-    ptr = _goNum( ptr );
-    if ( !ptr ) return 0;
+    if ( *ptr != '0' ) {
+        ptr = _goNum( ptr );
+        if ( !ptr ) return 0;
+    }
+    else if ( _isNum( *++ptr ) ) return 0;
+    if ( *ptr == '.' ) {
+        ptr = _fraqValue( ++ptr, property );
+        if ( !ptr ) return 0;
+    }
+    else if ( *ptr == 'e' || *ptr == 'E' ) {
+        ptr = _expValue( ++ptr, property );
+        if ( !ptr ) return 0;
+    }
+    else property->type = JSON_INTEGER;
     ptr = _setToNull( ptr );
-    property->type = JSON_INTEGER;
     return ptr;
 }
 
@@ -302,7 +333,7 @@ static char* _objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
             case 't':  ptr = _trueValue( ptr, property );    break;
             case 'f':  ptr = _falseValue( ptr, property );   break;
             case 'n':  ptr = _nullValue( ptr, property );    break;
-            default:   ptr = _integerValue( ptr, property ); break;
+            default:   ptr = _numValue( ptr, property ); break;
         }
         if ( !ptr ) return 0;
     }
