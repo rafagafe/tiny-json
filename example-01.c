@@ -60,7 +60,7 @@ int main( void ) {
         return EXIT_FAILURE;
     }
     char const* firstNameVal = json_getValue( firstName );
-    if ( firstNameVal ) printf( "Fist Name: %s.\n", firstNameVal );
+    printf( "Fist Name: %s.\n", firstNameVal );
 
     json_t const* lastName = json_getProperty( json, "lastName" );
     if ( !lastName || JSON_TEXT != json_getType( lastName ) ) {
@@ -68,7 +68,7 @@ int main( void ) {
         return EXIT_FAILURE;
     }
     char const* lastNameVal = json_getValue( lastName );
-    if ( lastName ) printf( "Last Name: %s.\n", lastNameVal );
+    printf( "Last Name: %s.\n", lastNameVal );
 
     json_t const* age = json_getProperty( json, "age" );
     if ( !age || JSON_INTEGER != json_getType( age ) ) {
@@ -90,7 +90,7 @@ int main( void ) {
             json_t const* number = json_getProperty( phone, "number" );
             if ( number ) {
                 char const* numberVal = json_getValue( number );
-                if ( numberVal ) printf( "Number: %s.\n", numberVal );
+                printf( "Number: %s.\n", numberVal );
             }
         }
     }
