@@ -47,7 +47,7 @@ static char* _setToNull( char* ch );
 /* Parse a string to get a json. */
 json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
     char* ptr = _goWhiteSpace( str );
-    if ( *ptr != '{') return 0;
+    if ( !ptr || *ptr != '{' ) return 0;
     jsonPool_t pool = { .mem = mem, .qty = qty };
     json_t* obj = _poolInit( &pool );
     obj->name    = 0;
