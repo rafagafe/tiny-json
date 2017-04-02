@@ -86,7 +86,7 @@ static void print( json_t const* json ) {
 
 /* Parser a json string. */
 int main( void ) {
-    char const* msg = "{\n"
+    char str[] = "{\n"
         "\t\"firstName\": \"Bidhan\",\n"
         "\t\"lastName\": \"Chatterjee\",\n"
         "\t\"age\": 40,\n"
@@ -101,11 +101,9 @@ int main( void ) {
         "\t\t{ \"type\": \"fax\", \"number\": \"91-342-2567692\" }\n"
         "\t]\n"
         "}\n";
-    char aux[512];
-    strcpy( aux, msg );
-    puts( aux );
+    puts( str );
     json_t mem[32];
-    json_t const* json = json_create( aux, mem, sizeof mem / sizeof *mem );
+    json_t const* json = json_create( str, mem, sizeof mem / sizeof *mem );
     if ( !json ) {
         puts("Error json create.");
         return EXIT_FAILURE;
