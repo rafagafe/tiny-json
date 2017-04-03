@@ -48,7 +48,7 @@ static char const* getJsonTypeName( jsonType_t type ) {
 
 /** Print the value os a json object or array.
   * @param json The handler of the json object or array. */
-static void print( json_t const* json ) {
+static void dump( json_t const* json ) {
 
     jsonType_t const type = json_getType( json );
     if ( type != JSON_OBJ && type != JSON_ARRAY ) {
@@ -66,7 +66,7 @@ static void print( json_t const* json ) {
         if ( name ) printf(" \"%s\": ", name );
 
         if ( propertyType == JSON_OBJ || propertyType == JSON_ARRAY )
-            print( child );
+            dump( child );
 
         else {
             char const* value = json_getValue( child );
@@ -109,6 +109,6 @@ int main( void ) {
         return EXIT_FAILURE;
     }
     puts("Print JSON:");
-    print( json );
+    dump( json );
     return EXIT_SUCCESS;
 }
