@@ -60,13 +60,12 @@ int main( void ) {
     char const* firstNameVal = json_getValue( firstName );
     printf( "Fist Name: %s.\n", firstNameVal );
 
-    json_t const* lastName = json_getProperty( json, "lastName" );
-    if ( !lastName || JSON_TEXT != json_getType( lastName ) ) {
+    char const* lastName = json_getPropertyValue( json, "lastName" );
+    if ( !lastName ) {
         puts("Error, the last name property is not found.");
         return EXIT_FAILURE;
-    }
-    char const* lastNameVal = json_getValue( lastName );
-    printf( "Last Name: %s.\n", lastNameVal );
+    }	
+    printf( "Last Name: %s.\n", lastName );
 
     json_t const* age = json_getProperty( json, "age" );
     if ( !age || JSON_INTEGER != json_getType( age ) ) {
@@ -85,11 +84,8 @@ int main( void ) {
     json_t const* phone;
     for( phone = json_getChild( phoneList ); phone != 0; phone = json_getSibling( phone ) ) {
         if ( JSON_OBJ == json_getType( phone ) ) {
-            json_t const* number = json_getProperty( phone, "number" );
-            if ( number ) {
-                char const* numberVal = json_getValue( number );
-                printf( "Number: %s.\n", numberVal );
-            }
+            char const* phoneNumber = json_getPropertyValue( phone, "number" );
+            if ( phoneNumber ) printf( "Number: %s.\n", phoneNumber );
         }
     }
 

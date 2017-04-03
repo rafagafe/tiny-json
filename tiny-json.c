@@ -36,6 +36,13 @@ json_t const* json_getProperty( json_t const* obj, char const* property ) {
     return 0;
 }
 
+/* Search a property by its name in a JSON object and return its value. */
+char const* json_getPropertyValue( json_t const* obj, char const* property ) {
+	json_t const* field = json_getProperty( obj, property );
+	if ( !field ) return 0;
+	return json_getValue( field );
+}
+
 /* Internal prototypes: */
 static char* _goWhiteSpace( char* str );
 static char* _goNum( char* str );

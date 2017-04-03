@@ -1,6 +1,6 @@
 
 
-build: example-01.exe example-02.exe test.exe
+build: example-01.exe example-02.exe
 
 clean:
 	rm -rf *.o

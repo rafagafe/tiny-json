@@ -95,6 +95,14 @@ static inline json_t const* json_getSibling( json_t const* json ) {
   * @retval Null pointer if not found. */
 json_t const* json_getProperty( json_t const* obj, char const* property );
 
+
+/** Search a property by its name in a JSON object and return its value.
+  * @param obj A valid handler of a json object. Its type must be JSON_OBJ.
+  * @param property The name of property to get.
+  * @retval If found a pointer to null-terminated string with the value.
+  * @retval Null pointer if not found. */
+char const* json_getPropertyValue( json_t const* obj, char const* property );
+
 /** Get the first property of a JSON object or array.
   * @param json A valid handler of a json property.
   *             Its type must be JSON_OBJ or JSON_ARRAY.
