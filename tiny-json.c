@@ -50,6 +50,7 @@ static json_t* _poolInit( jsonPool_t* pool );
 static json_t* _poolNew( jsonPool_t* pool );
 static char* _objValue( char* ptr, json_t* obj, jsonPool_t* pool );
 static char* _setToNull( char* ch );
+static bool _isEndOfPrimitive( char ch );
 
 /* Parse a string to get a json. */
 json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
@@ -191,7 +192,7 @@ static char* _checkStr( char* ptr, char const* str ) {
   * @retval Null pointer if any error occur. */
 static char* _primitiveValue( char* ptr, json_t* property, char const* value, jsonType_t type ) {
     ptr = _checkStr( ptr, value );
-    if ( !ptr ) return 0;
+    if ( !ptr || !_isEndOfPrimitive( *ptr ) ) return 0;
     ptr = _setToNull( ptr );
     property->type = type;
     return ptr;
@@ -233,7 +234,7 @@ static char* _expValue( char* ptr, json_t* property ) {
     if ( *ptr == '-' || *ptr == '+' ) ++ptr;
     if ( !_isNum( *ptr ) ) return 0;
     ptr = _goNum( ++ptr );
-    property->type = JSON_SCIENTIFIC;
+    property->type = JSON_REAL;
     return ptr;
 }
 
@@ -249,8 +250,7 @@ static char* _fraqValue( char* ptr, json_t* property ) {
 /** Parser a string to get a numerial value.
   * If the first character after the value is diferent of '}' or ']' is set to '\0'.
   * @param str Pointer to first character.
-  * @param property Property handler to set the value and the type:
-  *         JSON_REAL, JSON_SCIENTIFIC or JSON_INTEGER.
+  * @param property Property handler to set the value and the type: JSON_REAL or JSON_INTEGER.
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
 static char* _numValue( char* ptr, json_t* property ) {
@@ -268,7 +268,9 @@ static char* _numValue( char* ptr, json_t* property ) {
         ptr = _expValue( ++ptr, property );
         if ( !ptr ) return 0;
     }
-    else property->type = JSON_INTEGER;
+    else if ( _isEndOfPrimitive( *ptr ) )
+        property->type = JSON_INTEGER;
+    else return 0;
     ptr = _setToNull( ptr );
     return ptr;
 }
@@ -388,11 +390,13 @@ static char* _goWhile( char* str, char const* set ) {
     return 0;
 }
 
+static char const* const whitespace = " \n\r\t\f";
+
 /** Increases a pointer while it points to a white space character.
   * @param str The initial pointer value.
   * @return The final pointer value or null pointer if the null character was found. */
 static char* _goWhiteSpace( char* str ) {
-    return _goWhile( str, " \n\r\t\f" );
+    return _goWhile( str, whitespace );
 }
 
 /** Checks if a character is a decimal digit. */
@@ -411,10 +415,16 @@ static char* _goNum( char* str ) {
     return 0;
 }
 
+static char const* const endofblock = "}]";
+
 /** Set a char to '\0' and increase its pointer if the char is diferent to '}' or ']'.
   * @param ch Pointer to character.
   * @return  Final value pointer. */
 static char* _setToNull( char* ch ) {
-    if ( !_isOneOfThem( *ch, "}]" ) ) *ch++ = '\0';
+    if ( !_isOneOfThem( *ch, endofblock ) ) *ch++ = '\0';
     return ch;
+}
+
+static bool _isEndOfPrimitive( char ch ) {
+    return ch == ',' || _isOneOfThem( ch, whitespace ) || _isOneOfThem( ch, endofblock );    
 }

@@ -34,7 +34,7 @@ extern "C" {
 /** Enumeration of codes of suported JSON properties types. */
 typedef enum {
     JSON_OBJ, JSON_ARRAY, JSON_TEXT, JSON_BOOLEAN,
-    JSON_INTEGER, JSON_REAL, JSON_SCIENTIFIC, JSON_NULL
+    JSON_INTEGER, JSON_REAL, JSON_NULL
 } jsonType_t;
 
 /** Structure to handle JSON properties. */
