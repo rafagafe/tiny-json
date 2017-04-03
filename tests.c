@@ -59,13 +59,13 @@ static int primitive( void ) {
     unsigned const qty = sizeof pool / sizeof *pool;	    
     {
         char str[] = "{"
-                         "\"real\":       -0.004,"
+                         "\"max\":        9223372036854775807,"
+                         "\"min\":        -9223372036854775808,"
                          "\"boolvar0\":   false,"
                          "\"boolvar1\":   true,"
                          "\"nullvar\":    null,"
-                         "\"max\":        9223372036854775807,"
-                         "\"min\":        -9223372036854775808,"
                          "\"scientific\": 5368.32e-3,"
+                         "\"real\":       -0.004,"
                      "}";
         
         json_t const* json = json_create( str, pool, qty );
@@ -110,8 +110,7 @@ static int primitive( void ) {
         check( scientific );
         check( JSON_REAL == json_getType( scientific ) );
         check( !strcmp( "5368.32e-3", json_getValue( scientific ) ) );
-        check( 5368.32e-3 == json_getReal( scientific ) );  
-        printf( "%s - %f\n", json_getValue( scientific ), json_getReal( scientific ) );
+        check( 5368.32e-3 == json_getReal( scientific ) );
         
     }
 
@@ -203,6 +202,22 @@ int badformat( void ) {
         json_t const* json = json_create( str, pool, qty );
         check( !json );        
     }    
+    {
+        char str[] = "{\"var\":9223372036854775808}";
+        json_t const* json = json_create( str, pool, qty );
+        check( !json );        
+    }     
+    {
+        char str[] = "{\"var\":-9223372036854775809}";
+        json_t const* json = json_create( str, pool, qty );
+        check( !json );        
+    }     
+    {
+        char str[] = "{\"var\":9}";
+        json_t const* json = json_create( str, pool, qty );
+        check( json );
+    }     
+    
     done();
 }
 
