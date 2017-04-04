@@ -1,5 +1,9 @@
 # tiny-json
-tiny-json is a versatile and easy to use json parser in C suitable for IoT.
+tiny-json is a versatile and easy to use json parser in C suitable for embedded systems. It is fast, robust and portable.
+
+It is not only a tokenizer. You can get data in string format or get the primitives values in C type variables without performance loss.
+
+You can get the JSON fields one on one. Or get their values by their names. This helps you to save a lot of source code lines and development time.
 
 * It does not use recursivity.
 * It does not use dynamic memory. The memory you use can be reserved statically.
