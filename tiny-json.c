@@ -40,6 +40,8 @@ json_t const* json_getProperty( json_t const* obj, char const* property ) {
 char const* json_getPropertyValue( json_t const* obj, char const* property ) {
 	json_t const* field = json_getProperty( obj, property );
 	if ( !field ) return 0;
+        jsonType_t type = json_getType( field );
+        if ( JSON_ARRAY >= type ) return 0;
 	return json_getValue( field );
 }
 
@@ -322,6 +324,10 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
     for(;;) {
         ptr = goBlank( ptr );
         if ( !ptr ) return 0;
+        if ( *ptr == ',' ) {
+            ++ptr;
+            continue;
+        }        
         char const endchar = ( obj->type == JSON_OBJ )? '}': ']';
         if ( *ptr == endchar ) {
             *ptr = '\0';
@@ -331,10 +337,6 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
             obj = parentObj;
             ++ptr;
             continue;
-        }
-        if ( *ptr == ',' ) {
-            ptr = goBlank( ++ptr );
-            if ( !ptr ) return 0;
         }
         json_t* property = poolNew( pool );
         if ( !property ) return 0;
@@ -365,7 +367,7 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
             case 't':  ptr = trueValue( ptr, property );    break;
             case 'f':  ptr = falseValue( ptr, property );   break;
             case 'n':  ptr = nullValue( ptr, property );    break;
-            default:   ptr = numValue( ptr, property ); break;
+            default:   ptr = numValue( ptr, property );     break;
         }
         if ( !ptr ) return 0;
     }

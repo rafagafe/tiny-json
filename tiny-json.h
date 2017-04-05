@@ -100,7 +100,7 @@ json_t const* json_getProperty( json_t const* obj, char const* property );
   * @param obj A valid handler of a json object. Its type must be JSON_OBJ.
   * @param property The name of property to get.
   * @retval If found a pointer to null-terminated string with the value.
-  * @retval Null pointer if not found. */
+  * @retval Null pointer if not found or it is an array or an object. */
 char const* json_getPropertyValue( json_t const* obj, char const* property );
 
 /** Get the first property of a JSON object or array.
