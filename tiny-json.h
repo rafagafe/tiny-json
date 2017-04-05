@@ -31,7 +31,7 @@ extern "C" {
 /** @defgroup tinyJson Tiny JSON parser.
   * @{ */
 
-/** Enumeration of codes of suported JSON properties types. */
+/** Enumeration of codes of supported JSON properties types. */
 typedef enum {
     JSON_OBJ, JSON_ARRAY, JSON_TEXT, JSON_BOOLEAN,
     JSON_INTEGER, JSON_REAL, JSON_NULL
@@ -51,7 +51,7 @@ typedef struct json_s {
 /** Parse a string to get a json.
   * @param str String pointer with a JSON object. It will be modified.
   * @param mem Array of json properties to allocate.
-  * @param qty Number of elementes of mem.
+  * @param qty Number of elements of mem.
   * @retval Null pointer if any was wrong in the parse process.
   * @retval If the parser process was successfully a valid handler of a json.
   *         This property is always unnamed and its type is JSON_OBJ. */
@@ -82,7 +82,7 @@ static inline jsonType_t json_getType( json_t const* json ) {
 
 /** Get the next sibling of a JSON property that is within a JSON object or array.
   * @param json A valid handler of a json property.
-  * @retval The handler of the next sbling if found.
+  * @retval The handler of the next sibling if found.
   * @retval Null pointer if the json property is the last one. */
 static inline json_t const* json_getSibling( json_t const* json ) {
     return json->sibling;
@@ -107,7 +107,7 @@ char const* json_getPropertyValue( json_t const* obj, char const* property );
   * @param json A valid handler of a json property.
   *             Its type must be JSON_OBJ or JSON_ARRAY.
   * @retval The handler of the first property if there is.
-  * @retval Null pointer if the json object has not porperties. */
+  * @retval Null pointer if the json object has not properties. */
 static inline json_t const* json_getChild( json_t const* json ) {
     return json->u.child;
 }
@@ -127,7 +127,7 @@ static inline int64_t json_getInteger( json_t const* property ) {
 }
 
 /** Get the value of a json real property.
-  * @param property A valid handler of a json object. 
+  * @param property A valid handler of a json object.
   *                 Its type must be JSON_REAL or JSON_SCIENTIFIC.
   * @return The value. */
 static inline double json_getReal( json_t const* property ) {

@@ -102,7 +102,7 @@ static bool isHexaDigit( unsigned char nibble ) {
     return false;
 }
 
-/** Parse 4 charcters.
+/** Parse 4 characters.
   * @Param str Pointer to  first digit.
   * @retval '?' If the four characters are hexadecimal digits.
   * @retcal '\0' In other cases. */
@@ -176,7 +176,7 @@ static char* textValue( char* ptr, json_t* property ) {
 /** Compare two strings until get the null character in the second one.
   * @param ptr sub string
   * @param str main string
-  * @retval Pointer to next chraracter.
+  * @retval Pointer to next character.
   * @retval Null pointer if any error occur. */
 static char* checkStr( char* ptr, char const* str ) {
     while( *str )
@@ -186,7 +186,7 @@ static char* checkStr( char* ptr, char const* str ) {
 }
 
 /** Parser a string to get a primitive value.
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * If the first character after the value is different of '}' or ']' is set to '\0'.
   * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @param value String with the primitive literal.
@@ -202,7 +202,7 @@ static char* primitiveValue( char* ptr, json_t* property, char const* value, jso
 }
 
 /** Parser a string to get a true value.
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * If the first character after the value is different of '}' or ']' is set to '\0'.
   * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
@@ -212,7 +212,7 @@ static char* trueValue( char* ptr, json_t* property ) {
 }
 
 /** Parser a string to get a false value.
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * If the first character after the value is different of '}' or ']' is set to '\0'.
   * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
@@ -222,7 +222,7 @@ static char* falseValue( char* ptr, json_t* property ) {
 }
 
 /** Parser a string to get a null value.
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * If the first character after the value is different of '}' or ']' is set to '\0'.
   * @param str Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
@@ -254,7 +254,7 @@ static char* fraqValue( char* ptr ) {
 }
 
 /** Parser a string to get a numerical value.
-  * If the first character after the value is diferent of '}' or ']' is set to '\0'.
+  * If the first character after the value is different of '}' or ']' is set to '\0'.
   * @param str Pointer to first character.
   * @param property Property handler to set the value and the type: JSON_REAL or JSON_INTEGER.
   * @retval Pointer to first non white space after the string. If success.
@@ -375,7 +375,7 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
 
 /** Initialize a json pool.
   * @param pool The handler of the pool.
-  * @return a instace of a json. */
+  * @return a instance of a json. */
 static json_t* poolInit( jsonPool_t* pool ) {
     pool->nextFree = 1;
     return &pool->mem[0];
@@ -442,7 +442,7 @@ static char* goNum( char* str ) {
 /** Set of characters that defines the end of an array or a JSON object. */
 static char const* const endofblock = "}]";
 
-/** Set a char to '\0' and increase its pointer if the char is diferent to '}' or ']'.
+/** Set a char to '\0' and increase its pointer if the char is different to '}' or ']'.
   * @param ch Pointer to character.
   * @return  Final value pointer. */
 static char* setToNull( char* ch ) {
