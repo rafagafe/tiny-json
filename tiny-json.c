@@ -261,6 +261,7 @@ static char* fraqValue( char* ptr ) {
   * @retval Null pointer if any error occur. */
 static char* numValue( char* ptr, json_t* property ) {
     if ( *ptr == '-' ) ++ptr;
+    if ( !isNum( *ptr ) ) return 0;
     if ( *ptr != '0' ) {
         ptr = goNum( ptr );
         if ( !ptr ) return 0;
@@ -270,14 +271,14 @@ static char* numValue( char* ptr, json_t* property ) {
     if ( *ptr == '.' ) {
         ptr = fraqValue( ++ptr );
         if ( !ptr ) return 0;
-        property->type = JSON_REAL;        
+        property->type = JSON_REAL;
     }
     if ( *ptr == 'e' || *ptr == 'E' ) {
         ptr = expValue( ++ptr );
         if ( !ptr ) return 0;
-        property->type = JSON_REAL; 
+        property->type = JSON_REAL;
     }
-    if ( !isEndOfPrimitive( *ptr ) ) return 0;    
+    if ( !isEndOfPrimitive( *ptr ) ) return 0;
     if ( JSON_INTEGER == property->type ) {
         char const* value = property->u.value;
         bool const negative = *value == '-';
@@ -286,18 +287,17 @@ static char* numValue( char* ptr, json_t* property ) {
         if ( len > maxdigits ) return 0;
         if ( len == maxdigits ) {
             char const tmp = *ptr;
-            *ptr = '\0';        
+            *ptr = '\0';
             char const* const min = "-9223372036854775808";
             char const* const max = "9223372036854775807";
             char const* const threshold = negative ? min: max;
-            if ( 0 > strcmp( threshold, value ) ) return 0; 
+            if ( 0 > strcmp( threshold, value ) ) return 0;
             *ptr = tmp;
         }
     }
     ptr = setToNull( ptr );
     return ptr;
 }
-
 /** Add a property to a JSON object or array.
   * @param obj The handler of the JSON object or array.
   * @param property The handler of the property to be added. */
@@ -327,7 +327,7 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
         if ( *ptr == ',' ) {
             ++ptr;
             continue;
-        }        
+        }
         char const endchar = ( obj->type == JSON_OBJ )? '}': ']';
         if ( *ptr == endchar ) {
             *ptr = '\0';
@@ -363,11 +363,11 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
                 obj = property;
                 ++ptr;
                 break;
-            case '\"': ptr = textValue( ptr, property );    break;
-            case 't':  ptr = trueValue( ptr, property );    break;
-            case 'f':  ptr = falseValue( ptr, property );   break;
-            case 'n':  ptr = nullValue( ptr, property );    break;
-            default:   ptr = numValue( ptr, property );     break;
+            case '\"': ptr = textValue( ptr, property );  break;
+            case 't':  ptr = trueValue( ptr, property );  break;
+            case 'f':  ptr = falseValue( ptr, property ); break;
+            case 'n':  ptr = nullValue( ptr, property );  break;
+            default:   ptr = numValue( ptr, property );   break;
         }
         if ( !ptr ) return 0;
     }
@@ -452,5 +452,5 @@ static char* setToNull( char* ch ) {
 
 /** Indicate if a character is the end of a primitive value. */
 static bool isEndOfPrimitive( char ch ) {
-    return ch == ',' || isOneOfThem( ch, blank ) || isOneOfThem( ch, endofblock );    
+    return ch == ',' || isOneOfThem( ch, blank ) || isOneOfThem( ch, endofblock );
 }

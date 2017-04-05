@@ -250,7 +250,17 @@ int badformat( void ) {
         check( !json );
     }
     {
+        char str[] = "{\"var\":12233720368547758080}";
+        json_t const* json = json_create( str, pool, qty );
+        check( !json );
+    }
+    {
         char str[] = "{\"var\":-9223372036854775809}";
+        json_t const* json = json_create( str, pool, qty );
+        check( !json );
+    }
+    {
+        char str[] = "{\"var\":-12233720368547758090}";
         json_t const* json = json_create( str, pool, qty );
         check( !json );
     }
@@ -261,6 +271,16 @@ int badformat( void ) {
     }
     {
         char str[] = "{\"var\":,9}";
+        json_t const* json = json_create( str, pool, qty );
+        check( !json );
+    }
+    {
+        char str[] = "{\"var\":}";
+        json_t const* json = json_create( str, pool, qty );
+        check( !json );
+    }
+    {
+        char str[] = "{\"var\":,}";
         json_t const* json = json_create( str, pool, qty );
         check( !json );
     }
