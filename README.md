@@ -24,7 +24,7 @@ Two types are defined in tiny-json API. One is jsonType_t. It is an enumeration 
 ```C
 typedef enum {
     JSON_OBJ, JSON_ARRAY, JSON_TEXT, JSON_BOOLEAN,
-    JSON_INTEGER, JSON_REAL, JSON_SCIENTIFIC, JSON_NULL
+    JSON_INTEGER, JSON_REAL, JSON_NULL
 } jsonType_t;
 ```
 To parse a JSON string we use the function json_create(). We pass it an array of json_t for it can allocate JSON fields.
@@ -57,7 +57,7 @@ if ( agefield == NULL ) return EXIT_FAILURE;
 if ( json_getType( agefield ) != JSON_INTEGER ) return EXIT_FAILURE;
 
 int64_t agevalue = json_getInteger( agefield );
-printf( "%s%ll%s", "Age: '", agevalue, "'.\n" );
+printf( "%s%lld%s", "Age: '", agevalue, "'.\n" );
 
 char const* agetxt = json_getValue( agefield );
 printf( "%s%s%s", "Age: '", agetxt, "'.\n" );
