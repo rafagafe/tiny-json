@@ -75,14 +75,10 @@ json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
   * @return  The character code. */
 static char getEscape( char ch ) {
     static struct { char ch; char code; } const pair[] = {
-        { '\"', '\"' },
-        { '\\', '\\' },
-        { '/',  '/'  },
-        { 'b',  '\b' },
-        { 'f',  '\f' },
-        { 'n',  '\n' },
-        { 'r',  '\r' },
-        { 't',  '\t' },
+        { '\"', '\"' }, { '\\', '\\' },
+        { '/',  '/'  }, { 'b',  '\b' },
+        { 'f',  '\f' }, { 'n',  '\n' },
+        { 'r',  '\r' }, { 't',  '\t' },
     };
     unsigned int i;
     for( i = 0; i < sizeof pair / sizeof *pair; ++i )
@@ -282,14 +278,14 @@ static char* numValue( char* ptr, json_t* property ) {
     if ( JSON_INTEGER == property->type ) {
         char const* value = property->u.value;
         bool const negative = *value == '-';
-        unsigned int const maxdigits = negative ? 20: 19;
+        static char const min[] = "-9223372036854775808";
+        static char const max[] = "9223372036854775807";
+        unsigned int const maxdigits = ( negative? sizeof min: sizeof max ) - 1;
         unsigned int const len = ptr - value;
         if ( len > maxdigits ) return 0;
         if ( len == maxdigits ) {
             char const tmp = *ptr;
             *ptr = '\0';
-            char const* const min = "-9223372036854775808";
-            char const* const max = "9223372036854775807";
             char const* const threshold = negative ? min: max;
             if ( 0 > strcmp( threshold, value ) ) return 0;
             *ptr = tmp;
@@ -298,6 +294,7 @@ static char* numValue( char* ptr, json_t* property ) {
     ptr = setToNull( ptr );
     return ptr;
 }
+
 /** Add a property to a JSON object or array.
   * @param obj The handler of the JSON object or array.
   * @param property The handler of the property to be added. */
