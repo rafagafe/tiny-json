@@ -127,8 +127,7 @@ static inline int64_t json_getInteger( json_t const* property ) {
 }
 
 /** Get the value of a json real property.
-  * @param property A valid handler of a json object.
-  *                 Its type must be JSON_REAL or JSON_SCIENTIFIC.
+  * @param property A valid handler of a json object. Its type must be JSON_REAL.
   * @return The value. */
 static inline double json_getReal( json_t const* property ) {
     return atof( property->u.value );
