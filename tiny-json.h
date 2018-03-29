@@ -43,7 +43,10 @@ typedef struct json_s {
     char const* name;
     union {
         char const* value;
-        struct json_s* child;
+	    struct {
+		    struct json_s* child;
+		    struct json_s* last_child;
+	    };
     } u;
     jsonType_t type;
 } json_t;
