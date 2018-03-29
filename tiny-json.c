@@ -300,11 +300,12 @@ static char* numValue( char* ptr, json_t* property ) {
   * @param property The handler of the property to be added. */
 static void add( json_t* obj, json_t* property ) {
     property->sibling = 0;
-    if ( !obj->u.child ) obj->u.child = property;
-    else {
-        json_t* iter;
-        for( iter = obj->u.child; iter->sibling; iter = iter->sibling );
-        iter->sibling = property;
+    if ( !obj->u.child ){
+	    obj->u.child = property;
+	    obj->u.last_child = property;
+    } else {
+	    obj->u.last_child->sibling = property;
+	    obj->u.last_child = property;
     }
 }
 
