@@ -1,4 +1,7 @@
 # tiny-json
+
+- update warning: "ISO C99 doesn't support unnamed structs/unions"
+
 tiny-json is a versatile and easy to use json parser in C suitable for embedded systems. It is fast, robust and portable.
 
 It is not only a tokenizer. You can get data in string format or get the primitives values in C type variables without performance loss.

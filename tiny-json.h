@@ -43,10 +43,10 @@ typedef struct json_s {
     char const* name;
     union {
         char const* value;
-	    struct {
-		    struct json_s* child;
-		    struct json_s* last_child;
-	    };
+        struct {
+            struct json_s* child;
+            struct json_s* last_child;
+        } c;
     } u;
     jsonType_t type;
 } json_t;
@@ -112,7 +112,7 @@ char const* json_getPropertyValue( json_t const* obj, char const* property );
   * @retval The handler of the first property if there is.
   * @retval Null pointer if the json object has not properties. */
 static inline json_t const* json_getChild( json_t const* json ) {
-    return json->u.child;
+    return json->u.c.child;
 }
 
 /** Get the value of a json boolean property.

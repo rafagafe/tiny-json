@@ -30,7 +30,7 @@ typedef struct jsonPool_s {
 /* Search a property by its name in a JSON object. */
 json_t const* json_getProperty( json_t const* obj, char const* property ) {
     json_t const* sibling;
-    for( sibling = obj->u.child; sibling; sibling = sibling->sibling )
+    for( sibling = obj->u.c.child; sibling; sibling = sibling->sibling )
         if ( sibling->name && !strcmp( sibling->name, property ) )
             return sibling;
     return 0;
@@ -63,7 +63,7 @@ json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
     json_t* obj = poolInit( &pool );
     obj->name    = 0;
     obj->sibling = 0;
-    obj->u.child = 0;
+    obj->u.c.child = 0;
     ptr = objValue( ptr, obj, &pool );
     if ( !ptr ) return 0;
     return obj;
@@ -300,12 +300,12 @@ static char* numValue( char* ptr, json_t* property ) {
   * @param property The handler of the property to be added. */
 static void add( json_t* obj, json_t* property ) {
     property->sibling = 0;
-    if ( !obj->u.child ){
-	    obj->u.child = property;
-	    obj->u.last_child = property;
+    if ( !obj->u.c.child ){
+	    obj->u.c.child = property;
+	    obj->u.c.last_child = property;
     } else {
-	    obj->u.last_child->sibling = property;
-	    obj->u.last_child = property;
+	    obj->u.c.last_child->sibling = property;
+	    obj->u.c.last_child = property;
     }
 }
 
@@ -316,7 +316,7 @@ static void add( json_t* obj, json_t* property ) {
   * @retval Null pointer if any error occur. */
 static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
     obj->type    = JSON_OBJ;
-    obj->u.child = 0;
+    obj->u.c.child = 0;
     obj->sibling = 0;
     ptr++;
     for(;;) {
@@ -349,14 +349,14 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
         switch( *ptr ) {
             case '{':
                 property->type    = JSON_OBJ;
-                property->u.child = 0;
+                property->u.c.child = 0;
                 property->sibling = obj;
                 obj = property;
                 ++ptr;
                 break;
             case '[':
                 property->type    = JSON_ARRAY;
-                property->u.child = 0;
+                property->u.c.child = 0;
                 property->sibling = obj;
                 obj = property;
                 ++ptr;
