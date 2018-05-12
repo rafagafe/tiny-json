@@ -116,8 +116,8 @@ static char getCharFromUnicode( char const* str ) {
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
 static char* parseString( char* str ) {
-    char* head = str;
-    char* tail = str;
+    unsigned char* head = (unsigned char*)str;
+    unsigned char* tail = (unsigned char*)str;
     for( ; *head >= ' '; ++head, ++tail ) {
         if ( *head == '\"' ) {
             *tail = '\0';

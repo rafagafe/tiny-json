@@ -134,19 +134,37 @@ static int primitive( void ) {
 }
 
 static int text( void ) {
-    json_t pool[2];
-    unsigned const qty = sizeof pool / sizeof *pool;
+    
+    {
+        json_t pool[2];
+        unsigned const qty = sizeof pool / sizeof *pool;
 
-    char str[] = "{\"a\":\"\\tThis text: \\\"Hello\\\".\\n\"}";
+        char str[] = "{\"a\":\"\\tThis text: \\\"Hello\\\".\\n\"}";
 
-    json_t const* json = json_create( str, pool, qty );
-    check( json );
+        json_t const* json = json_create( str, pool, qty );
+        check( json );
 
-    json_t const* a = json_getProperty( json, "a" );
-    check( a );
-    check( JSON_TEXT == json_getType( a ) );
-    check( !strcmp( "\tThis text: \"Hello\".\n", json_getValue( a ) ) );
+        json_t const* a = json_getProperty( json, "a" );
+        check( a );
+        check( JSON_TEXT == json_getType( a ) );
+        check( !strcmp( "\tThis text: \"Hello\".\n", json_getValue( a ) ) );
+    }
+    
+    {
+        json_t pool[2];
+        unsigned const qty = sizeof pool / sizeof *pool;
+        
+        char str[] = "{\"name\":\"Christiane Eluère\"}";
+        
+        json_t const* json = json_create( str, pool, qty );
+        check( json );
 
+        json_t const* name = json_getProperty( json, "name" );
+        check( name );
+        check( JSON_TEXT == json_getType( name ) );
+        check( !strcmp( "Christiane Eluère", json_getValue( name ) ) );
+        
+    }
 
     done();
 }
