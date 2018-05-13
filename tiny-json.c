@@ -102,7 +102,7 @@ static bool isHexaDigit( unsigned char nibble ) {
   * @Param str Pointer to  first digit.
   * @retval '?' If the four characters are hexadecimal digits.
   * @retcal '\0' In other cases. */
-static char getCharFromUnicode( char const* str ) {
+static unsigned char getCharFromUnicode( unsigned char const* str ) {
     unsigned int i;
     for( i = 0; i < 4; ++i )
         if ( !isHexaDigit( str[i] ) )
@@ -116,12 +116,12 @@ static char getCharFromUnicode( char const* str ) {
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
 static char* parseString( char* str ) {
-    char* head = str;
-    char* tail = str;
+    unsigned char* head = (unsigned char*)str;
+    unsigned char* tail = (unsigned char*)str;
     for( ; *head >= ' '; ++head, ++tail ) {
         if ( *head == '\"' ) {
             *tail = '\0';
-            return ++head;
+            return (char*)++head;
         }
         if ( *head == '\\' ) {
             if ( *++head == 'u' ) {
