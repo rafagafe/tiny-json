@@ -102,7 +102,7 @@ static bool isHexaDigit( unsigned char nibble ) {
   * @Param str Pointer to  first digit.
   * @retval '?' If the four characters are hexadecimal digits.
   * @retcal '\0' In other cases. */
-static char getCharFromUnicode( char const* str ) {
+static unsigned char getCharFromUnicode( unsigned char const* str ) {
     unsigned int i;
     for( i = 0; i < 4; ++i )
         if ( !isHexaDigit( str[i] ) )
@@ -121,7 +121,7 @@ static char* parseString( char* str ) {
     for( ; *head >= ' '; ++head, ++tail ) {
         if ( *head == '\"' ) {
             *tail = '\0';
-            return ++head;
+            return (char*)++head;
         }
         if ( *head == '\\' ) {
             if ( *++head == 'u' ) {
