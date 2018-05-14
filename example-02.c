@@ -27,25 +27,6 @@
 #include <string.h>
 #include "tiny-json.h"
 
-/** Get the name of a json type code.
-  * @param type the json type code.
-  * @return A null-terminated string with the name. */
-static char const* getJsonTypeName( jsonType_t type ) {
-    static struct { jsonType_t type; char const* name; } const pair[] = {
-        { JSON_OBJ,     "object"  },
-        { JSON_TEXT,    "text"    },
-        { JSON_BOOLEAN, "boolean" },
-        { JSON_INTEGER, "integer" },
-        { JSON_NULL,    "null"    },
-        { JSON_ARRAY,   "array"   },
-    };
-    unsigned int i;
-    for( i = 0; i < sizeof pair / sizeof *pair; ++i )
-        if ( pair[i].type == type )
-            return pair[i].name;
-    return "Unknown";
-}
-
 /** Print the value os a json object or array.
   * @param json The handler of the json object or array. */
 static void dump( json_t const* json ) {
