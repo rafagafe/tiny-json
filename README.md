@@ -1,5 +1,7 @@
 # tiny-json
 
+[![Build Status](https://travis-ci.org/rafagafe/tiny-json.svg?branch=master)](https://travis-ci.org/rafagafe/tiny-json)
+
 tiny-json is a versatile and easy to use json parser in C suitable for embedded systems. It is fast, robust and portable.
 
 It is not only a tokenizer. You can get data in string format or get the primitives values in C type variables without performance loss.
