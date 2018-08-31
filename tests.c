@@ -5,7 +5,7 @@
      
   Licensed under the MIT License <http://opensource.org/licenses/MIT>.
   SPDX-License-Identifier: MIT
-  Copyright (c) 2013-2018 Rafa Garcia <rafagarcia77@gmail.com>.
+  Copyright (c) 2016-2018 Rafa Garcia <rafagarcia77@gmail.com>.
 
   Permission is hereby  granted, free of charge, to any  person obtaining a copy
   of this software and associated  documentation files (the "Software"), to deal
@@ -33,10 +33,41 @@
 #include <stdint.h>
 #include "tiny-json.h"
 
+
+
+// ----------------------------------------------------- Test "framework": ---
+
 #define done() return 0
 #define fail() return __LINE__
-static unsigned int checkqty = 0;
+static int checkqty = 0;
 #define check( x ) do { ++checkqty; if (!(x)) fail(); } while ( 0 )
+
+struct test {
+    int(*func)(void);
+    char const* name;
+};
+
+static int test_suit( struct test const* tests, int numtests ) {
+    printf( "%s", "\n\nTests:\n" );
+    int failed = 0;
+    for( int i = 0; i < numtests; ++i ) {
+        printf( " %02d%s%-25s ", i, ": ", tests[i].name );
+        int linerr = tests[i].func();
+        if ( 0 == linerr )
+            printf( "%s", "OK\n" );
+        else {
+            printf( "%s%d\n", "Failed, line: ", linerr );
+            ++failed;
+        }
+    }
+    printf( "\n%s%d\n", "Total checks: ", checkqty );
+    printf( "%s[ %d / %d ]\r\n\n\n", "Tests PASS: ", numtests - failed, numtests );
+    return failed;
+}
+
+
+
+// ----------------------------------------------------------- Unit tests: ---
 
 static int empty( void ) {
     json_t pool[6];
@@ -332,35 +363,17 @@ int badformat( void ) {
     done();
 }
 
-struct test {
-    int(*func)(void);
-    char const* name;
-};
 
-static int test_exec( struct test const* test ) {
-    int const err = test->func();
-    if ( err ) {
-        fprintf( stderr, "%s%s%s%d%s", "Failed test: '", test->name, "' Line: ", err, ".\n" );
-        return 1;
-    }
-    return 0;
-}
-
-static struct test const tests[] = {
-    { empty,       "Empty object and array" },
-    { primitive,   "Primitive properties"   },
-    { text,        "Text"                   },
-    { array,       "Array"                  },
-    { badformat,   "Bad format"             },
-    { goodformats, "Formats"                },
-};
+// --------------------------------------------------------- Execute tests: ---
 
 int main( void ) {
-    int failed = 0;
-    unsigned int const qty = sizeof tests / sizeof *tests;
-    for( unsigned int i = 0; i < qty; ++i )
-        failed += test_exec( tests + i );
-    unsigned int const percent = 100.0 * ( qty - failed ) / qty;
-    printf( "%d%s%d%s", percent, "%. ", checkqty, " checks.\n" );
-    return failed;
+    static struct test const tests[] = {
+        { empty,       "Empty object and array" },
+        { primitive,   "Primitive properties"   },
+        { text,        "Text"                   },
+        { array,       "Array"                  },
+        { badformat,   "Bad format"             },
+        { goodformats, "Formats"                },
+    };
+    return test_suit( tests, sizeof tests / sizeof *tests );
 }

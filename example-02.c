@@ -5,7 +5,7 @@
      
   Licensed under the MIT License <http://opensource.org/licenses/MIT>.
   SPDX-License-Identifier: MIT
-  Copyright (c) 2013-2018 Rafa Garcia <rafagarcia77@gmail.com>.
+  Copyright (c) 2016-2018 Rafa Garcia <rafagarcia77@gmail.com>.
 
   Permission is hereby  granted, free of charge, to any  person obtaining a copy
   of this software and associated  documentation files (the "Software"), to deal
