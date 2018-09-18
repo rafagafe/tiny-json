@@ -13,6 +13,7 @@ You can get the JSON fields one on one. Or get their values by their names. This
 * It has not limits in nested level in arrays or json objects.
 * The JSON property number limit is determined by the size of a buffer that can be statically reserved.
 
+If you need create JSON strings please visit: https://github.com/rafagafe/json-maker
 
 # Philosophy
 
