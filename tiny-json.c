@@ -28,6 +28,7 @@
 */
 
 #include <string.h>
+#include <ctype.h>
 #include "tiny-json.h"
 
 /** Structure to handle a heap of JSON properties. */
@@ -57,7 +58,6 @@ char const* json_getPropertyValue( json_t const* obj, char const* property ) {
 
 /* Internal prototypes: */
 static char* goBlank( char* str );
-static bool isNum( unsigned char ch );
 static char* goNum( char* str );
 static json_t* poolInit( jsonPool_t* pool );
 static json_t* poolNew( jsonPool_t* pool );
@@ -97,17 +97,6 @@ static char getEscape( char ch ) {
     return '\0';
 }
 
-/** Check if a character is a hexadecimal digit. */
-static bool isHexaDigit( unsigned char nibble ) {
-    if ( nibble <  '0' ) return false;
-    if ( nibble <= '9' ) return true;
-    if ( nibble <  'A' ) return false;
-    if ( nibble <= 'F' ) return true;
-    if ( nibble <  'a' ) return false;
-    if ( nibble <= 'f' ) return true;
-    return false;
-}
-
 /** Parse 4 characters.
   * @Param str Pointer to  first digit.
   * @retval '?' If the four characters are hexadecimal digits.
@@ -115,7 +104,7 @@ static bool isHexaDigit( unsigned char nibble ) {
 static unsigned char getCharFromUnicode( unsigned char const* str ) {
     unsigned int i;
     for( i = 0; i < 4; ++i )
-        if ( !isHexaDigit( str[i] ) )
+        if ( !isxdigit( str[i] ) )
             return '\0';
     return '?';
 }
@@ -243,7 +232,7 @@ static char* nullValue( char* ptr, json_t* property ) {
   * @retval Null pointer if any error occur. */
 static char* expValue( char* ptr ) {
     if ( *ptr == '-' || *ptr == '+' ) ++ptr;
-    if ( !isNum( *ptr ) ) return 0;
+    if ( !isdigit( *ptr ) ) return 0;
     ptr = goNum( ++ptr );
     return ptr;
 }
@@ -253,7 +242,7 @@ static char* expValue( char* ptr ) {
   * @retval Pointer to first non numerical after the string. If success.
   * @retval Null pointer if any error occur. */
 static char* fraqValue( char* ptr ) {
-    if ( !isNum( *ptr ) ) return 0;
+    if ( !isdigit( *ptr ) ) return 0;
     ptr = goNum( ++ptr );
     if ( !ptr ) return 0;
     return ptr;
@@ -267,12 +256,12 @@ static char* fraqValue( char* ptr ) {
   * @retval Null pointer if any error occur. */
 static char* numValue( char* ptr, json_t* property ) {
     if ( *ptr == '-' ) ++ptr;
-    if ( !isNum( *ptr ) ) return 0;
+    if ( !isdigit( *ptr ) ) return 0;
     if ( *ptr != '0' ) {
         ptr = goNum( ptr );
         if ( !ptr ) return 0;
     }
-    else if ( isNum( *++ptr ) ) return 0;
+    else if ( isdigit( *++ptr ) ) return 0;
     property->type = JSON_INTEGER;
     if ( *ptr == '.' ) {
         ptr = fraqValue( ++ptr );
@@ -431,17 +420,12 @@ static char* goBlank( char* str ) {
     return goWhile( str, blank );
 }
 
-/** Checks if a character is a decimal digit. */
-static bool isNum( unsigned char ch ) {
-    return ch >= '0' && ch <= '9';
-}
-
 /** Increases a pointer while it points to a decimal digit character.
   * @param str The initial pointer value.
   * @return The final pointer value or null pointer if the null character was found. */
 static char* goNum( char* str ) {
     for( ; *str != '\0'; ++str ) {
-        if ( !isNum( *str ) )
+        if ( !isdigit( *str ) )
             return str;
     }
     return 0;
