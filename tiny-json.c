@@ -32,11 +32,12 @@
 #include "tiny-json.h"
 
 /** Structure to handle a heap of JSON properties. */
-typedef struct jsonPool_s {
+typedef struct jsonStaticPool_s {
     json_t* const mem;      /**< Pointer to array of json properties.      */
     unsigned int const qty; /**< Length of the array of json properties.   */
     unsigned int nextFree;  /**< The index of the next free json property. */
-} jsonPool_t;
+    jsonPool_t pool;
+} jsonStaticPool_t;
 
 /* Search a property by its name in a JSON object. */
 json_t const* json_getProperty( json_t const* obj, char const* property ) {
@@ -66,17 +67,25 @@ static char* setToNull( char* ch );
 static bool isEndOfPrimitive( char ch );
 
 /* Parse a string to get a json. */
-json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
+json_t const* json_create_pool( char* str, jsonPool_t* pool ) {
     char* ptr = goBlank( str );
     if ( !ptr || *ptr != '{' ) return 0;
-    jsonPool_t pool = { .mem = mem, .qty = qty };
-    json_t* obj = poolInit( &pool );
+    json_t* obj = pool->init( pool );
     obj->name    = 0;
     obj->sibling = 0;
     obj->u.c.child = 0;
-    ptr = objValue( ptr, obj, &pool );
+    ptr = objValue( ptr, obj, pool );
     if ( !ptr ) return 0;
     return obj;
+}
+
+/* Parse a string to get a json. */
+json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
+    jsonStaticPool_t spool = {
+        .mem = mem, .qty = qty,
+        .pool = { .init = poolInit, .new = poolNew }
+    };
+    return json_create_pool( str, &spool.pool );
 }
 
 /** Get a special character with its escape character. Examples:
@@ -335,7 +344,7 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
             ++ptr;
             continue;
         }
-        json_t* property = poolNew( pool );
+        json_t* property = pool->new( pool );
         if ( !property ) return 0;
         if( obj->type != JSON_ARRAY ) {
             if ( *ptr != '\"' ) return 0;
@@ -374,8 +383,9 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
   * @param pool The handler of the pool.
   * @return a instance of a json. */
 static json_t* poolInit( jsonPool_t* pool ) {
-    pool->nextFree = 1;
-    return &pool->mem[0];
+    jsonStaticPool_t* spool = json_container_of(pool, jsonStaticPool_t, pool);
+    spool->nextFree = 1;
+    return &spool->mem[0];
 }
 
 /** Create an instance of a json from a pool.
@@ -383,8 +393,9 @@ static json_t* poolInit( jsonPool_t* pool ) {
   * @retval The handler of the new instance if success.
   * @retval Null pointer if the pool was empty. */
 static json_t* poolNew( jsonPool_t* pool ) {
-    if ( pool->nextFree >= pool->qty ) return 0;
-    return &pool->mem[pool->nextFree++];
+    jsonStaticPool_t* spool = json_container_of(pool, jsonStaticPool_t, pool);
+    if ( spool->nextFree >= spool->qty ) return 0;
+    return &spool->mem[spool->nextFree++];
 }
 
 /** Checks whether an character belongs to set.
