@@ -34,9 +34,14 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#define json_container_of(ptr, type, member) ({ \
+        void *__mptr = (void *)(ptr); \
+        ((type *)(__mptr - offsetof(type, member))); })
 
 /** @defgroup tinyJson Tiny JSON parser.
   * @{ */
@@ -61,6 +66,13 @@ typedef struct json_s {
     jsonType_t type;
 } json_t;
 
+/** Structure to handle a heap of JSON properties. */
+typedef struct jsonPool_s jsonPool_t;
+typedef struct jsonPool_s {
+    json_t* (*init) ( jsonPool_t* pool );
+    json_t* (*new) ( jsonPool_t* pool );
+} jsonPool_t;
+
 /** Parse a string to get a json.
   * @param str String pointer with a JSON object. It will be modified.
   * @param mem Array of json properties to allocate.
@@ -69,6 +81,14 @@ typedef struct json_s {
   * @retval If the parser process was successfully a valid handler of a json.
   *         This property is always unnamed and its type is JSON_OBJ. */
 json_t const* json_create( char* str, json_t mem[], unsigned int qty );
+
+/** Parse a string to get a json.
+  * @param str String pointer with a JSON object. It will be modified.
+  * @param pool Custom json pool pointer.
+  * @retval Null pointer if any was wrong in the parse process.
+  * @retval If the parser process was successfully a valid handler of a json.
+  *         This property is always unnamed and its type is JSON_OBJ. */
+json_t const* json_create_pool( char* str, jsonPool_t *pool );
 
 /** Get the name of a json property.
   * @param json A valid handler of a json property.
