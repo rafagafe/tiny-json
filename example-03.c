@@ -44,13 +44,13 @@ typedef struct jsonStaticPool_s {
 } jsonStaticPool_t;
 
 static json_t* poolInit( jsonPool_t* pool ) {
-    jsonStaticPool_t* spool = json_container_of(pool, jsonStaticPool_t, pool);
+    jsonStaticPool_t* spool = json_containerOf(pool, jsonStaticPool_t, pool);
     spool->nextFree = 1;
     return &spool->mem[0];
 }
 
 static json_t* poolNew( jsonPool_t* pool ) {
-    jsonStaticPool_t* spool = json_container_of(pool, jsonStaticPool_t, pool);
+    jsonStaticPool_t* spool = json_containerOf(pool, jsonStaticPool_t, pool);
     if ( spool->nextFree >= sizeof spool->mem / sizeof spool->mem[0] ) return 0;
     return &spool->mem[spool->nextFree++];
 }
@@ -74,7 +74,7 @@ int main( void ) {
         "}\n";
     puts( str );
     jsonStaticPool_t spool = { .pool = { .init = poolInit, .new = poolNew } };
-    json_t const* json = json_create_pool( str, &spool.pool );
+    json_t const *json = json_createWithPool( str, &spool.pool );
     if ( !json ) {
         puts("Error json create.");
         return EXIT_FAILURE;

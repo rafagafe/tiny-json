@@ -67,7 +67,7 @@ static char* setToNull( char* ch );
 static bool isEndOfPrimitive( char ch );
 
 /* Parse a string to get a json. */
-json_t const* json_create_pool( char* str, jsonPool_t* pool ) {
+json_t const* json_createWithPool( char *str, jsonPool_t *pool ) {
     char* ptr = goBlank( str );
     if ( !ptr || *ptr != '{' ) return 0;
     json_t* obj = pool->init( pool );
@@ -82,10 +82,14 @@ json_t const* json_create_pool( char* str, jsonPool_t* pool ) {
 /* Parse a string to get a json. */
 json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
     jsonStaticPool_t spool = {
-        .mem = mem, .qty = qty,
-        .pool = { .init = poolInit, .new = poolNew }
+        .mem  = mem,
+        .qty  = qty,
+        .pool = {
+            .init = poolInit,
+            .new = poolNew
+        }
     };
-    return json_create_pool( str, &spool.pool );
+    return json_createWithPool( str, &spool.pool );
 }
 
 /** Get a special character with its escape character. Examples:
@@ -383,9 +387,9 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
   * @param pool The handler of the pool.
   * @return a instance of a json. */
 static json_t* poolInit( jsonPool_t* pool ) {
-    jsonStaticPool_t* spool = json_container_of(pool, jsonStaticPool_t, pool);
+    jsonStaticPool_t *spool = json_containerOf( pool, jsonStaticPool_t, pool );
     spool->nextFree = 1;
-    return &spool->mem[0];
+    return spool->mem;
 }
 
 /** Create an instance of a json from a pool.
@@ -393,9 +397,9 @@ static json_t* poolInit( jsonPool_t* pool ) {
   * @retval The handler of the new instance if success.
   * @retval Null pointer if the pool was empty. */
 static json_t* poolNew( jsonPool_t* pool ) {
-    jsonStaticPool_t* spool = json_container_of(pool, jsonStaticPool_t, pool);
+    jsonStaticPool_t *spool = json_containerOf( pool, jsonStaticPool_t, pool );
     if ( spool->nextFree >= spool->qty ) return 0;
-    return &spool->mem[spool->nextFree++];
+    return spool->mem + spool->nextFree++;
 }
 
 /** Checks whether an character belongs to set.
