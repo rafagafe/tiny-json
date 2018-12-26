@@ -61,7 +61,7 @@ char const* json_getPropertyValue( json_t const* obj, char const* property ) {
 static char* goBlank( char* str );
 static char* goNum( char* str );
 static json_t* poolInit( jsonPool_t* pool );
-static json_t* poolNew( jsonPool_t* pool );
+static json_t* poolAlloc( jsonPool_t* pool );
 static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool );
 static char* setToNull( char* ch );
 static bool isEndOfPrimitive( char ch );
@@ -86,7 +86,7 @@ json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
         .qty  = qty,
         .pool = {
             .init = poolInit,
-            .new = poolNew
+            .alloc = poolAlloc
         }
     };
     return json_createWithPool( str, &spool.pool );
@@ -348,7 +348,7 @@ static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
             ++ptr;
             continue;
         }
-        json_t* property = pool->new( pool );
+        json_t* property = pool->alloc( pool );
         if ( !property ) return 0;
         if( obj->type != JSON_ARRAY ) {
             if ( *ptr != '\"' ) return 0;
@@ -396,7 +396,7 @@ static json_t* poolInit( jsonPool_t* pool ) {
   * @param pool The handler of the pool.
   * @retval The handler of the new instance if success.
   * @retval Null pointer if the pool was empty. */
-static json_t* poolNew( jsonPool_t* pool ) {
+static json_t* poolAlloc( jsonPool_t* pool ) {
     jsonStaticPool_t *spool = json_containerOf( pool, jsonStaticPool_t, pool );
     if ( spool->nextFree >= spool->qty ) return 0;
     return spool->mem + spool->nextFree++;
