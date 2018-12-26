@@ -156,7 +156,7 @@ static inline double json_getReal( json_t const* property ) {
 typedef struct jsonPool_s jsonPool_t;
 struct jsonPool_s {
     json_t* (*init)( jsonPool_t* pool );
-    json_t* (*new)( jsonPool_t* pool );
+    json_t* (*alloc)( jsonPool_t* pool );
 };
 
 /** Parse a string to get a json.
