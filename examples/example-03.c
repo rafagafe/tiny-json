@@ -35,7 +35,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tiny-json.h"
+#include "../tiny-json.h"
+
+typedef struct {
+    json_t mem[32];
+    unsigned int nextFree;
+    jsonPool_t pool;
+} jsonStaticPool_t;
+
+static json_t* poolInit( jsonPool_t* pool ) {
+    jsonStaticPool_t* spool = json_containerOf(pool, jsonStaticPool_t, pool);
+    spool->nextFree = 1;
+    return &spool->mem[0];
+}
+
+static json_t* poolAlloc( jsonPool_t* pool ) {
+    jsonStaticPool_t* spool = json_containerOf(pool, jsonStaticPool_t, pool);
+    if ( spool->nextFree >= sizeof spool->mem / sizeof spool->mem[0] ) return 0;
+    return &spool->mem[spool->nextFree++];
+}
 
 /* Parser a json string. */
 int main( void ) {
@@ -55,8 +73,8 @@ int main( void ) {
         "\t]\n"
         "}\n";
     puts( str );
-    json_t mem[32];
-    json_t const* json = json_create( str, mem, sizeof mem / sizeof *mem );
+    jsonStaticPool_t spool = { .pool = { .init = poolInit, .alloc = poolAlloc } };
+    json_t const *json = json_createWithPool( str, &spool.pool );
     if ( !json ) {
         puts("Error json create.");
         return EXIT_FAILURE;

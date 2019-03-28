@@ -28,52 +28,14 @@
 */
 
 /*
- * In this example the JSON library is used to scan an object that nothing is
- * known about its properties.
+ * In this example the JSON library is used to analyze an object that some
+ * properties are expected.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tiny-json.h"
-
-/** Print the value os a json object or array.
-  * @param json The handler of the json object or array. */
-static void dump( json_t const* json ) {
-
-    jsonType_t const type = json_getType( json );
-    if ( type != JSON_OBJ && type != JSON_ARRAY ) {
-        puts("error");
-        return;
-    }
-
-    printf( "%s", type == JSON_OBJ? " {": " [" );
-
-    json_t const* child;
-    for( child = json_getChild( json ); child != 0; child = json_getSibling( child ) ) {
-
-        jsonType_t propertyType = json_getType( child );
-        char const* name = json_getName( child );
-        if ( name ) printf(" \"%s\": ", name );
-
-        if ( propertyType == JSON_OBJ || propertyType == JSON_ARRAY )
-            dump( child );
-
-        else {
-            char const* value = json_getValue( child );
-            if ( value ) {
-                bool const text = JSON_TEXT == json_getType( child );
-                char const* fmt = text? " \"%s\"": " %s";
-                printf( fmt, value );
-                bool const last = !json_getSibling( child );
-                if ( !last ) putchar(',');
-            }
-        }
-    }
-
-    printf( "%s", type == JSON_OBJ? " }": " ]" );
-
-}
+#include "../tiny-json.h"
 
 /* Parser a json string. */
 int main( void ) {
@@ -99,7 +61,43 @@ int main( void ) {
         puts("Error json create.");
         return EXIT_FAILURE;
     }
-    puts("Print JSON:");
-    dump( json );
+
+    json_t const* firstName = json_getProperty( json, "firstName" );
+    if ( !firstName || JSON_TEXT != json_getType( firstName ) ) {
+        puts("Error, the first name property is not found.");
+        return EXIT_FAILURE;
+    }
+    char const* firstNameVal = json_getValue( firstName );
+    printf( "Fist Name: %s.\n", firstNameVal );
+
+    char const* lastName = json_getPropertyValue( json, "lastName" );
+    if ( !lastName ) {
+        puts("Error, the last name property is not found.");
+        return EXIT_FAILURE;
+    }	
+    printf( "Last Name: %s.\n", lastName );
+
+    json_t const* age = json_getProperty( json, "age" );
+    if ( !age || JSON_INTEGER != json_getType( age ) ) {
+        puts("Error, the age property is not found.");
+        return EXIT_FAILURE;
+    }
+    int const ageVal = (int)json_getInteger( age );
+    printf( "Age: %d.\n", ageVal );
+
+    json_t const* phoneList = json_getProperty( json, "phoneList" );
+    if ( !phoneList || JSON_ARRAY != json_getType( phoneList ) ) {
+        puts("Error, the phone list property is not found.");
+        return EXIT_FAILURE;
+    }
+
+    json_t const* phone;
+    for( phone = json_getChild( phoneList ); phone != 0; phone = json_getSibling( phone ) ) {
+        if ( JSON_OBJ == json_getType( phone ) ) {
+            char const* phoneNumber = json_getPropertyValue( phone, "number" );
+            if ( phoneNumber ) printf( "Number: %s.\n", phoneNumber );
+        }
+    }
+
     return EXIT_SUCCESS;
 }
