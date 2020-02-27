@@ -130,7 +130,7 @@ static unsigned char getCharFromUnicode( unsigned char const* str ) {
 static char* parseString( char* str ) {
     unsigned char* head = (unsigned char*)str;
     unsigned char* tail = (unsigned char*)str;
-    for( ; *head >= ' '; ++head, ++tail ) {
+    for( ; *head; ++head, ++tail ) {
         if ( *head == '\"' ) {
             *tail = '\0';
             return (char*)++head;
