@@ -81,14 +81,11 @@ json_t const* json_createWithPool( char *str, jsonPool_t *pool ) {
 
 /* Parse a string to get a json. */
 json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
-    jsonStaticPool_t spool = {
-        .mem  = mem,
-        .qty  = qty,
-        .pool = {
-            .init = poolInit,
-            .alloc = poolAlloc
-        }
-    };
+    jsonStaticPool_t spool;
+    spool.mem = mem;
+    spool.qty = qty;
+    spool.pool.init = poolInit;
+    spool.pool.alloc = poolAlloc;
     return json_createWithPool( str, &spool.pool );
 }
 
@@ -293,7 +290,7 @@ static char* numValue( char* ptr, json_t* property ) {
         static char const min[] = "-9223372036854775808";
         static char const max[] = "9223372036854775807";
         unsigned int const maxdigits = ( negative? sizeof min: sizeof max ) - 1;
-        unsigned int const len = ptr - value;
+        unsigned int const len = ( unsigned int const ) ( ptr - value );
         if ( len > maxdigits ) return 0;
         if ( len == maxdigits ) {
             char const tmp = *ptr;
