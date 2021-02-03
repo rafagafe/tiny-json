@@ -69,7 +69,7 @@ static bool isEndOfPrimitive( char ch );
 /* Parse a string to get a json. */
 json_t const* json_createWithPool( char *str, jsonPool_t *pool ) {
     char* ptr = goBlank( str );
-    if ( !ptr || *ptr != '{' ) return 0;
+    if ( !ptr || (*ptr != '{' && *ptr != '[') ) return 0;
     json_t* obj = pool->init( pool );
     obj->name    = 0;
     obj->sibling = 0;
@@ -325,7 +325,7 @@ static void add( json_t* obj, json_t* property ) {
   * @retval Pointer to first character after the value. If success.
   * @retval Null pointer if any error occur. */
 static char* objValue( char* ptr, json_t* obj, jsonPool_t* pool ) {
-    obj->type    = JSON_OBJ;
+    obj->type    = *ptr == '{' ? JSON_OBJ : JSON_ARRAY;
     obj->u.c.child = 0;
     obj->sibling = 0;
     ptr++;
