@@ -84,7 +84,7 @@ static inline char const* json_getName( json_t const* json ) {
 
 /** Get the value of a json property.
   * The type of property cannot be JSON_OBJ or JSON_ARRAY.
-  * @param json A valid handler of a json property.
+  * @param property A valid handler of a json property.
   * @return Pointer to null-terminated string with the value. */
 static inline char const* json_getValue( json_t const* property ) {
     return property->u.value;

@@ -90,9 +90,9 @@ json_t const* json_create( char* str, json_t mem[], unsigned int qty ) {
 }
 
 /** Get a special character with its escape character. Examples:
-  * 'b' -> '\b', 'n' -> '\n', 't' -> '\t'
+  * 'b' -> '\\b', 'n' -> '\\n', 't' -> '\\t'
   * @param ch The escape character.
-  * @return  The character code. */
+  * @retval  The character code. */
 static char getEscape( char ch ) {
     static struct { char ch; char code; } const pair[] = {
         { '\"', '\"' }, { '\\', '\\' },
@@ -108,9 +108,9 @@ static char getEscape( char ch ) {
 }
 
 /** Parse 4 characters.
-  * @Param str Pointer to  first digit.
+  * @param str Pointer to  first digit.
   * @retval '?' If the four characters are hexadecimal digits.
-  * @retcal '\0' In other cases. */
+  * @retval '\0' In other cases. */
 static unsigned char getCharFromUnicode( unsigned char const* str ) {
     unsigned int i;
     for( i = 0; i < 4; ++i )
@@ -151,7 +151,7 @@ static char* parseString( char* str ) {
 }
 
 /** Parse a string to get the name of a property.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
   * @param property The property to assign the name.
   * @retval Pointer to first of property value. If success.
   * @retval Null pointer if any error occur. */
@@ -166,7 +166,7 @@ static char* propertyName( char* ptr, json_t* property ) {
 }
 
 /** Parse a string to get the value of a property when its type is JSON_TEXT.
-  * @param str Pointer to first character ('\"').
+  * @param ptr Pointer to first character ('\"').
   * @param property The property to assign the name.
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
@@ -192,7 +192,7 @@ static char* checkStr( char* ptr, char const* str ) {
 
 /** Parser a string to get a primitive value.
   * If the first character after the value is different of '}' or ']' is set to '\0'.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @param value String with the primitive literal.
   * @param type The code of the type. ( JSON_BOOLEAN or JSON_NULL )
@@ -208,7 +208,7 @@ static char* primitiveValue( char* ptr, json_t* property, char const* value, jso
 
 /** Parser a string to get a true value.
   * If the first character after the value is different of '}' or ']' is set to '\0'.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
@@ -218,7 +218,7 @@ static char* trueValue( char* ptr, json_t* property ) {
 
 /** Parser a string to get a false value.
   * If the first character after the value is different of '}' or ']' is set to '\0'.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
@@ -228,7 +228,7 @@ static char* falseValue( char* ptr, json_t* property ) {
 
 /** Parser a string to get a null value.
   * If the first character after the value is different of '}' or ']' is set to '\0'.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
   * @param property Property handler to set the value and the type, (true, false or null).
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
@@ -237,7 +237,7 @@ static char* nullValue( char* ptr, json_t* property ) {
 }
 
 /** Analyze the exponential part of a real number.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
   * @retval Pointer to first non numerical after the string. If success.
   * @retval Null pointer if any error occur. */
 static char* expValue( char* ptr ) {
@@ -248,7 +248,7 @@ static char* expValue( char* ptr ) {
 }
 
 /** Analyze the decimal part of a real number.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
   * @retval Pointer to first non numerical after the string. If success.
   * @retval Null pointer if any error occur. */
 static char* fraqValue( char* ptr ) {
@@ -260,7 +260,7 @@ static char* fraqValue( char* ptr ) {
 
 /** Parser a string to get a numerical value.
   * If the first character after the value is different of '}' or ']' is set to '\0'.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
   * @param property Property handler to set the value and the type: JSON_REAL or JSON_INTEGER.
   * @retval Pointer to first non white space after the string. If success.
   * @retval Null pointer if any error occur. */
@@ -319,7 +319,8 @@ static void add( json_t* obj, json_t* property ) {
 }
 
 /** Parser a string to get a json object value.
-  * @param str Pointer to first character.
+  * @param ptr Pointer to first character.
+  * @param obj The handler of the JSON root object or array.
   * @param pool The handler of a json pool for creating json instances.
   * @retval Pointer to first character after the value. If success.
   * @retval Null pointer if any error occur. */
