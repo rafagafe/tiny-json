@@ -30,6 +30,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "tiny-json.h"
+#include <stdio.h>
+#define MAX_PROPERTY_SIZE 64
 
 /** Structure to handle a heap of JSON properties. */
 typedef struct jsonStaticPool_s {
@@ -43,9 +45,15 @@ typedef struct jsonStaticPool_s {
 json_t const* json_getProperty( json_t const* obj, char const* property ) {
     json_t const* sibling;
     for( sibling = obj->u.c.child; sibling; sibling = sibling->sibling ){
-        if ( sibling->name && !strcmp( sibling->name, property ) ){
-            return sibling;
+        if (strlen(property)>MAX_PROPERTY_SIZE)
+        {
+            return 0;
         }
+        else{
+            if ( sibling->name && !strncmp( sibling->name, property,MAX_PROPERTY_SIZE) ){
+            return sibling;
+            }
+        }      
     }
     return 0;
 }
@@ -358,7 +366,7 @@ static char* numValue( char* ptr, json_t* property ) {
             char const tmp = *ptr;
             char const* const threshold = negative ? min: max;
             *ptr = '\0';
-        if ( 0 > strcmp( threshold, value ) ){
+        if ( 0 > strncmp( threshold, value, len) ){
                 return 0;
             }
             *ptr = tmp;
