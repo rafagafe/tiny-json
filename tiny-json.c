@@ -44,9 +44,11 @@ typedef struct jsonStaticPool_s {
 json_t const* json_getProperty( json_t const* obj, char const* property ) {
     json_t const* sibling;
     for( sibling = obj->u.c.child; sibling; sibling = sibling->sibling ){
-        if (strlen(property)>MAX_PROPERTY_SIZE)
+        if (strnlen (property,MAX_PROPERTY_SIZE)==MAX_PROPERTY_SIZE)
         {
-            return 0;
+            if (property[MAX_PROPERTY_SIZE] !='\0'){
+                return 0;
+            }
         }
         else{
             if ( sibling->name && !strncmp( sibling->name, property,MAX_PROPERTY_SIZE) ){
