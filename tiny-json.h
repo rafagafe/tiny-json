@@ -38,6 +38,7 @@ extern "C" {
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#define MAX_PROPERTY_SIZE 64
 
 #define json_containerOf( ptr, type, member ) \
     ((type*)( (char*)ptr - offsetof( type, member ) ))

@@ -30,7 +30,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "tiny-json.h"
-#define MAX_PROPERTY_SIZE 64
 
 /** Structure to handle a heap of JSON properties. */
 typedef struct jsonStaticPool_s {
