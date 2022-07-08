@@ -41,6 +41,9 @@ typedef struct jsonStaticPool_s {
 
 /* Search a property by its name in a JSON object. */
 json_t const* json_getProperty( json_t const* obj, char const* property ) {
+    if ( !obj || !property || json_getType( obj )==JSON_NULL ) {
+      return 0;
+    }
     if ( obj->name && !strcmp( obj->name, property ) ) {
       return obj;
     }
