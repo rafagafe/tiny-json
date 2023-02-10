@@ -41,6 +41,12 @@ typedef struct jsonStaticPool_s {
 
 /* Search a property by its name in a JSON object. */
 json_t const* json_getProperty( json_t const* obj, char const* property ) {
+    if ( !obj || !property || json_getType( obj )==JSON_NULL ) {
+      return 0;
+    }
+    if ( obj->name && !strcmp( obj->name, property ) ) {
+      return obj;
+    }
     json_t const* sibling;
     for( sibling = obj->u.c.child; sibling; sibling = sibling->sibling )
         if ( sibling->name && !strcmp( sibling->name, property ) )
@@ -459,3 +465,92 @@ static char* setToNull( char* ch ) {
 static bool isEndOfPrimitive( char ch ) {
     return ch == ',' || isOneOfThem( ch, blank ) || isOneOfThem( ch, endofblock );
 }
+
+
+#ifdef JSON_REVERSER
+
+#include <assert.h>
+#include "json-maker.h"
+
+static char* objectToJSON(char* o, size_t* sz, const json_t* e, const char* property, const char* newString, const int newInteger) {
+  for( e = json_getChild(e); e!=0; e = json_getSibling(e) ) {
+    const char *key = json_getName(e);
+    switch( json_getType( e ) ) {
+      case JSON_OBJ: {
+        o = json_objOpen( o, key, sz );
+        o = objectToJSON(o, sz, e, property, newString, newInteger);
+        o = json_objClose( o, sz );
+        break; }
+      case JSON_TEXT: {
+        const char *value = json_getValue(e);
+        if ( key && property && !strcmp( key, property ) ) {
+          value = newString;
+        }
+        o = json_str( o, key, value, sz );
+        break; }
+      case JSON_INTEGER: {
+        int value = json_getInteger(e);
+        if ( key && property && !strcmp( key, property ) ) {
+          value = newInteger;
+        }
+        o = json_int( o, key, value, sz );
+        break; }
+      case JSON_ARRAY: {
+        o = json_arrOpen( o, key, sz);
+        o = objectToJSON(o, sz, e, property, newString, newInteger);
+        o = json_arrClose( o, sz );
+        break; }
+      case JSON_BOOLEAN: {
+        bool value = json_getBoolean(e);
+        if ( key && property && !strcmp( key, property ) ) {
+          value = newInteger;
+        }
+        o = json_bool( o, key, value, sz );
+        break; }
+      case JSON_REAL:
+      case JSON_NULL:
+      default:
+        assert(0); // not supported
+        break;
+    }
+  }
+  return o;
+}
+
+char* json_ObjectsToJSON(char* json, size_t* sz, const json_t* e) {
+  char *o = json;
+  o = json_objOpen( o, NULL, sz );
+  o = objectToJSON( o, sz, e, 0, 0, 0 );
+  o = json_objClose( o, sz );
+  o = json_end( o, sz );
+  return json;
+}
+
+char* json_replaceString(char* json, size_t* sz, const json_t* e, const char* key, const char* value) {
+  char *o = json;
+  o = json_objOpen( o, NULL, sz );
+  o = objectToJSON( o, sz, e, key, value, 0 );
+  o = json_objClose( o, sz );
+  o = json_end( o, sz );
+  return json;
+}
+
+char* json_replaceInteger(char* json, size_t* sz, const json_t* e, const char* key, const int value) {
+  char *o = json;
+  o = json_objOpen( o, NULL, sz );
+  o = objectToJSON( o, sz, e, key, 0, value );
+  o = json_objClose( o, sz );
+  o = json_end( o, sz );
+  return json;
+}
+
+char* json_replaceBoolean(char* json, size_t* sz, const json_t* e, const char* key, const int value) {
+  char *o = json;
+  o = json_objOpen( o, NULL, sz );
+  o = objectToJSON( o, sz, e, key, 0, value );
+  o = json_objClose( o, sz );
+  o = json_end( o, sz );
+  return json;
+}
+
+#endif

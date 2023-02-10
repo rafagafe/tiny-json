@@ -1,6 +1,6 @@
 
 CC = gcc
-CFLAGS = -std=c99 -Wall -pedantic
+CFLAGS = -std=c99 -Wall -pedantic -I. -I.. -I../../json-maker -DJSON_REVERSER 
 
 src = $(wildcard *.c)
 src += $(wildcard ../*.c)
@@ -9,7 +9,7 @@ dep = $(obj:.o=.d)
 
 .PHONY: build all clean
 
-build: example-01.exe example-02.exe example-03.exe
+build: example-01.exe example-02.exe example-03.exe example-04.exe
 
 all: clean build
 
@@ -19,14 +19,17 @@ clean::
 	rm -rf *.exe
 
 	
-example-01.exe: example-01.o ../tiny-json.o
+example-01.exe: example-01.o ../tiny-json.o ../../json-maker/json-maker.o
 	gcc $(CFLAGS) -o $@ $^
 
-example-02.exe: example-02.o ../tiny-json.o
+example-02.exe: example-02.o ../tiny-json.o ../../json-maker/json-maker.o
 	gcc $(CFLAGS) -o $@ $^
 
-example-03.exe: example-03.o ../tiny-json.o
-	gcc $(CFLAGS) -o $@ $^	
+example-03.exe: example-03.o ../tiny-json.o ../../json-maker/json-maker.o
+	gcc $(CFLAGS) -o $@ $^
+
+example-04.exe: example-04.o ../tiny-json.o ../../json-maker/json-maker.o
+	gcc $(CFLAGS) -o $@ $^
 
 -include $(dep)
 
