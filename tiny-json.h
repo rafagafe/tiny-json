@@ -167,6 +167,30 @@ struct jsonPool_s {
   *         This property is always unnamed and its type is JSON_OBJ. */
 json_t const* json_createWithPool( char* str, jsonPool_t* pool );
 
+
+#ifdef JSON_REVERSER
+
+#include <assert.h>
+#include "json-maker.h"
+
+/** reverse the action of json_createWithPool.
+ *  i.e. convert all the json_t*  tiny json objects back into a string
+ *  caller must allocate json string large enough to thold the string and set sz accordingly.
+ * returns pointer to json string */
+char* json_ObjectsToJSON(char* json, size_t* sz, const json_t* e);
+
+/** json_ObjectsToJSON but also finds the property matching *key and replaces it with value.
+ *  if caller intends on calling more than one property, then they should 
+ *  retain the change by reseting json input & storing tiny-objects via 
+      strcpy(data, json);
+      e = json_create( data, pool, sizeof(pool)/sizeof(pool[0]) ); 
+    and then calling the json_replace api again. */
+char* json_replaceString(char* json, size_t* sz, const json_t* e, const char* key, const char* value);
+char* json_replaceInteger(char* json, size_t* sz, const json_t* e, const char* key, const int value);
+char* json_replaceBoolean(char* json, size_t* sz, const json_t* e, const char* key, const int value);
+
+#endif
+
 /** @ } */
 
 #ifdef __cplusplus
