@@ -287,11 +287,13 @@ static char* numValue( char* ptr, json_t* property ) {
     if ( JSON_INTEGER == property->type ) {
         char const* value = property->u.value;
         bool const negative = *value == '-';
-        static char const min[] = "-9223372036854775808";
-        static char const max[] = "9223372036854775807";
+        static char const min[] = "-9223372036854775808"; // min int64_t
+        static char const max[] = "18446744073709551615"; // max uint64_t
         unsigned int const maxdigits = ( negative? sizeof min: sizeof max ) - 1;
         unsigned int const len = ( unsigned int const ) ( ptr - value );
         if ( len > maxdigits ) return 0;
+        if ( negative == 0 )
+            property->type = JSON_UINTEGER;
         if ( len == maxdigits ) {
             char const tmp = *ptr;
             *ptr = '\0';
